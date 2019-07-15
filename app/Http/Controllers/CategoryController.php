@@ -19,9 +19,7 @@ class CategoryController extends Controller
     {
         $names = $request->input('names');
 
-        $category = new Category([
-            'name' => clean($names['en'])
-        ]);
+        $category = new Category();
 
         foreach ($names as $key => $value) {
             $category->translations()->create([
