@@ -11,9 +11,19 @@ class Category extends Model
 
     protected $guarded = ['id'];
 
-    protected $hidden = ['updated_at','created_at'];
+    protected $hidden = ['updated_at', 'created_at', 'translations'];
 
-    protected $with = ['translations'];
+    protected $appends = ['locales'];
+
+    public function getLocalesAttribute()
+    {
+        $result = [];
+
+        foreach ($this->translations as $translation) {
+            $result[$translation['lang']] = $translation['name'];
+        }
+        return $result;
+    }
 
     public function scopeData()
     {

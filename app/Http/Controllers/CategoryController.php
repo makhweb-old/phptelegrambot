@@ -19,7 +19,7 @@ class CategoryController extends Controller
     {
         $names = $request->input('names');
 
-        $category = new Category();
+        $category = Category::create();
 
         foreach ($names as $key => $value) {
             $category->translations()->create([
