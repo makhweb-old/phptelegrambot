@@ -37,7 +37,7 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        return response()->json($category);
+        return response()->json((new CategoryResource($category)));
     }
 
     public function update(CategoryRequest $request, $id)

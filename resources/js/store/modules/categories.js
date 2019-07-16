@@ -6,7 +6,8 @@ import * as types from "../mutation-types";
  * Initial state
  */
 export const state = {
-  data: []
+  data: [],
+  item: []
 };
 
 /**
@@ -15,6 +16,9 @@ export const state = {
 export const mutations = {
   [types.SET_CATEGORY_DATA](state, payload) {
     state.data = payload;
+  },
+  [types.SET_CATEGORY_ITEM](state, payload) {
+    state.item = payload;
   }
 };
 
@@ -25,6 +29,10 @@ export const actions = {
   async fetch({ commit }) {
     const { data } = await axios.get(api.path("categories"));
     commit(types.SET_CATEGORY_DATA, data);
+  },
+  async fetchOne({ commit }, id) {
+    const { data } = await axios.get(`${api.path("categories")}/${id}`);
+    commit(types.SET_CATEGORY_ITEM, data);
   },
   async save({ dispatch }, payload) {
     await axios.post(api.path("categories"), {
@@ -48,5 +56,6 @@ export const actions = {
  * Getters
  */
 export const getters = {
-  data: state => state.data
+  data: state => state.data,
+  item: state => state.item
 };

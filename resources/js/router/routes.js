@@ -19,6 +19,7 @@ export default [
         { path: '', name: 'index', redirect: { name: 'dashboard' } },
         { path: 'dashboard', name: 'dashboard', component: require('$comp/admin/dashboard').default },
         { path: 'categories', name: 'categories', component: require('$comp/admin/categories').default },
+        { path: 'categories/:id', name: 'categories.show', component: require('$comp/admin/categories/edit').default },
         { path: 'profile', component: require('$comp/admin/profile/ProfileWrapper').default, children:
           [
             { path: '', name: 'profile', component: require('$comp/admin/profile/Profile').default },

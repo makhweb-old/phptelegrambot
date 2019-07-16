@@ -12,7 +12,7 @@ class Product extends Model
 
     protected $hidden = ['created_at', 'updated_at', 'category_id'];
 
-    protected $with = ['translations', 'category'];
+    protected $with = ['translations'];
 
     public function scopeData()
     {

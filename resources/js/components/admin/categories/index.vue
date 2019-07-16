@@ -44,13 +44,14 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="categories" class="elevation-1">
       <template v-slot:items="props">
-        <td
+        <router-link
+          tag="td"
           class="text-xs-left"
           v-for="(translation,index) in props.item.translations"
+          :to="{name:'categories.show', params:{id:props.item.id}}"
           :key="index"
-        >{{ translation.name }}</td>
+        >{{ translation.name }}</router-link>
         <td class="justify-center layout px-0">
-          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
           <v-icon small @click="deleteItem(props.item)">delete</v-icon>
         </td>
       </template>

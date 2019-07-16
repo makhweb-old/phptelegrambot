@@ -17,7 +17,8 @@ class Category extends JsonResource
         return [
             'id' => $this->id,
             'locales' => $this->locales,
-            'translations' => $this->translations
+            'translations' => $this->translations,
+            'products' => $this->products
         ];
     }
 }

@@ -18,7 +18,6 @@ class Category extends Model
     public function getLocalesAttribute()
     {
         $result = [];
-
         foreach ($this->translations as $translation) {
             $result[$translation['lang']] = $translation['name'];
         }
