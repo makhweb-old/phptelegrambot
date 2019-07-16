@@ -33,3 +33,4 @@ Route::group(['middleware' => ['jwt']], function() {
 
 });
 
+Route::resource('products', 'ProductsController');Route::resource('products', 'ProductController');

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Arr;
-use App\Http\Requests\CategoryRequest;
 use App\Category;
 use App\Translation;
+use Illuminate\Support\Arr;
+use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\Category as CategoryResource;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->get();
-
+        $categories = CategoryResource::collection(Category::latest()->get());
+        
         return response()->json($categories);
     }
 

@@ -8,6 +8,12 @@ class Product extends Model
 {
     const PER_PAGE = 10;
 
+    protected $guarded = ['id'];
+
+    protected $hidden = ['created_at', 'updated_at', 'category_id'];
+
+    protected $with = ['translations', 'category'];
+
     public function scopeData()
     {
         return self::paginate(self::PER_PAGE);
@@ -16,6 +22,11 @@ class Product extends Model
     public static function lastPage()
     {
         return (int) ceil(self::count() / self::PER_PAGE);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /**

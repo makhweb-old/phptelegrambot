@@ -11,7 +11,7 @@ class Category extends Model
 
     protected $guarded = ['id'];
 
-    protected $hidden = ['updated_at', 'created_at'];
+    protected $hidden = ['updated_at', 'created_at', 'translations'];
 
     protected $appends = ['locales'];
 
