@@ -15,15 +15,20 @@
 
           <v-card-text>
             <v-container grid-list-md>
-              <v-layout wrap>
+              <v-layout wrap v-if="isNew">
                 <v-flex xs12>
-                  <v-text-field v-model="items.locales.en" suffix="EN" label="Enter name"></v-text-field>
+                  <v-text-field v-model="items.locales.en" suffix="UZ" label="Enter name"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                   <v-text-field v-model="items.locales.ru" suffix="RU" label="Введите наименование"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field v-model="items.locales.uz" suffix="UZ" label="Nomini kiriting"></v-text-field>
+                  <v-text-field v-model="items.locales.uz" suffix="EN" label="Nomini kiriting"></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout wrap v-else>
+                <v-flex xs12 v-for="(item,key) in editedItem.translations" :key="key">
+                  <v-text-field v-model="item.name" :suffix="toUpper(item.lang)" label="Enter name"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -39,9 +44,11 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="categories" class="elevation-1">
       <template v-slot:items="props">
-        <td class="text-xs-left">{{ props.item.locales.en }}</td>
-        <td class="text-xs-left">{{ props.item.locales.ru }}</td>
-        <td class="text-xs-left">{{ props.item.locales.uz }}</td>
+        <td
+          class="text-xs-left"
+          v-for="(translation,index) in props.item.translations"
+          :key="index"
+        >{{ translation.name }}</td>
         <td class="justify-center layout px-0">
           <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
           <v-icon small @click="deleteItem(props.item)">delete</v-icon>
@@ -61,7 +68,7 @@ export default {
     dialog: false,
     headers: [
       {
-        text: "Name in English",
+        text: "Name in Uzbek",
         align: "left",
         sortable: false
       },
@@ -71,11 +78,12 @@ export default {
         sortable: false
       },
       {
-        text: "Name in Uzbek",
+        text: "Name in English",
         align: "left",
         sortable: false
       }
     ],
+    editedItem: [],
     editedIndex: -1,
     items: {
       locales: {
@@ -116,16 +124,21 @@ export default {
   },
 
   methods: {
+    toUpper(text) {
+      return text.toUpperCase();
+    },
     editItem(item) {
       this.editedIndex = this.categories.indexOf(item);
-      this.items = Object.assign({}, item);
+
+      // We need copy deep object
+      // (because when changes editedItem will change categories too)
+      this.editedItem = JSON.parse(JSON.stringify(item));
       this.dialog = true;
     },
 
     deleteItem(item) {
-      const index = this.categories.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
-        this.categories.splice(index, 1);
+        this.$store.dispatch("categories/delete", item.id);
     },
 
     close() {
@@ -138,10 +151,9 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.categories[this.editedIndex], this.items);
+        this.$store.dispatch("categories/update", this.editedItem);
       } else {
-        const { locales } = this.items;
-        this.$store.dispatch("categories/save", locales);
+        this.$store.dispatch("categories/save", this.items.locales);
       }
       this.close();
     }

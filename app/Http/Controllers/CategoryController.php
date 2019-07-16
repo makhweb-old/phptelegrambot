@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Arr;
 use App\Http\Requests\CategoryRequest;
 use App\Category;
 use App\Translation;
@@ -17,7 +18,7 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request)
     {
-        $names = $request->input('names');
+        $names = $request->input('data');
 
         $category = Category::create();
 
@@ -40,10 +41,15 @@ class CategoryController extends Controller
 
     public function update(CategoryRequest $request, $id)
     {
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
+        $category = $request->input('data');
 
-        return response()->json($category, 200);
+        foreach ($category['translations'] as $translation) {
+            Translation::find($translation['id'])->update(
+                Arr::only($translation, ['name', 'description'])
+            );
+        }
+
+        return response()->json(['success' => true], 200);
     }
 
     public function destroy($id)
