@@ -34,17 +34,14 @@ export const actions = {
     const { data } = await axios.get(`${api.path("categories")}/${id}`);
     commit(types.SET_CATEGORY_ITEM, data);
   },
-  async save({ dispatch }, payload) {
+  async save(payload) {
     await axios.post(api.path("categories"), payload);
-    dispatch("fetch");
   },
   async delete({ dispatch }, payload) {
     await axios.delete(`${api.path("categories")}/${payload}`);
-    dispatch("fetch");
   },
   async update({ dispatch }, payload) {
     await axios.patch(`${api.path("categories")}/${payload.id}`, payload);
-    dispatch("fetch");
   }
 };
 
