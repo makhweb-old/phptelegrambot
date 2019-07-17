@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -37,11 +38,22 @@ class Product extends Model
         return $this->morphMany(Translation::class, 'translatable');
     }
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
-        static::deleting(function($product) {
-             $product->translations()->delete();
+        static::deleting(function ($product) {
+            $product->translations()->delete();
         });
+    }
+
+    public static function updateItems($items)
+    {
+        foreach ($items as $item) {
+            self::find($item['id'])->update(
+                Arr::only($item, ['photo', 'price'])
+            );
+            Translation::updateItems($item['translations']);
+        }
     }
 }

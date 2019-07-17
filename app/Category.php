@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Product;
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
@@ -54,11 +54,48 @@ class Category extends Model
         return $this->morphMany(Translation::class, 'translatable');
     }
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
-        static::deleting(function($category) {
-             $category->translations()->delete();
+        static::deleting(function ($category) {
+            $category->translations()->delete();
         });
+    }
+
+    public static function createItems($items)
+    {
+        $category = self::create();
+
+        foreach ($items['translations'] as $translation) {
+            $category
+                ->translations()
+                ->create(Arr::only($translation, ['lang', 'name']));
+        }
+
+        if (!empty($items['products'])) {
+            foreach ($items['products'] as $product) {
+                $productModel = $category
+                    ->products()
+                    ->create(Arr::only($product, ['price', 'photo']));
+                foreach ($product['translations'] as $productTranslation) {
+                    $productModel
+                        ->translations()
+                        ->create(
+                            Arr::only($productTranslation, [
+                                'lang',
+                                'name',
+                                'description'
+                            ])
+                        );
+                }
+            }
+        }
+    }
+
+    public static function updateItems($items)
+    {
+        Product::updateItems($items['products']);
+        Translation::updateItems($items['translations']);
     }
 }

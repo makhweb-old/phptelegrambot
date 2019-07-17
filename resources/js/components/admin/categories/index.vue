@@ -6,7 +6,13 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          <router-link
+            tag="v-btn"
+            :to="{name:'categories.create'}"
+            color="primary"
+            dark
+            class="mb-2"
+          >New Item</router-link>
         </template>
         <v-card>
           <v-card-title>
@@ -44,16 +50,16 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="categories" class="elevation-1">
       <template v-slot:items="props">
-        <router-link
-          tag="td"
-          class="text-xs-left"
-          v-for="(translation,index) in props.item.translations"
-          :to="{name:'categories.show', params:{id:props.item.id}}"
-          :key="index"
-        >{{ translation.name }}</router-link>
-        <td class="justify-center layout px-0">
-          <v-icon small @click="deleteItem(props.item)">delete</v-icon>
-        </td>
+        <tr>
+          <router-link
+            tag="td"
+            class="text-xs-left"
+            v-for="(translation,index) in props.item.translations"
+            :to="{name:'categories.show', params:{id:props.item.id}}"
+            :key="index"
+          >{{ translation.name }}</router-link>
+
+        </tr>
       </template>
     </v-data-table>
   </div>

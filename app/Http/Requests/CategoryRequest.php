@@ -14,7 +14,7 @@ class CategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'data'=>'required'
+            'translations'=>'required'
         ];
     }
 }

@@ -27,9 +27,7 @@ export const actions = {
     commit(types.SET_PRODUCTS_DATA, data);
   },
   async save({ dispatch }, payload) {
-    await axios.post(api.path("products"), {
-      ...payload
-    });
+    await axios.post(api.path("products"), payload);
     dispatch("fetch");
   },
   async delete({ dispatch }, payload) {
@@ -37,9 +35,7 @@ export const actions = {
     dispatch("fetch");
   },
   async update({ dispatch }, payload) {
-    await axios.patch(`${api.path("products")}/${payload.id}`, {
-      data: payload
-    });
+    await axios.patch(`${api.path("products")}/${payload.id}`, payload);
     dispatch("fetch");
   }
 };

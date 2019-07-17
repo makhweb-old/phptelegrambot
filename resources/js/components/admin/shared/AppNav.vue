@@ -130,14 +130,7 @@ export default {
             exact: false
           }
         ],
-        [
-          {
-            title: "Products",
-            icon: "dashboard",
-            to: { name: "profile" },
-            exact: false
-          }
-        ],
+        
         [
           {
             title: "Profile",

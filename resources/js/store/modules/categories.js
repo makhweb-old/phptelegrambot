@@ -35,9 +35,7 @@ export const actions = {
     commit(types.SET_CATEGORY_ITEM, data);
   },
   async save({ dispatch }, payload) {
-    await axios.post(api.path("categories"), {
-      data: payload
-    });
+    await axios.post(api.path("categories"), payload);
     dispatch("fetch");
   },
   async delete({ dispatch }, payload) {
@@ -45,9 +43,7 @@ export const actions = {
     dispatch("fetch");
   },
   async update({ dispatch }, payload) {
-    await axios.patch(`${api.path("categories")}/${payload.id}`, {
-      data: payload
-    });
+    await axios.patch(`${api.path("categories")}/${payload.id}`, payload);
     dispatch("fetch");
   }
 };

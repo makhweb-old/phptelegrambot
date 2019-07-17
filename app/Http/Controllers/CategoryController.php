@@ -13,42 +13,27 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = CategoryResource::collection(Category::latest()->get());
-        
+
         return response()->json($categories);
     }
 
     public function store(CategoryRequest $request)
     {
-        $names = $request->input('data');
+        $category = Category::createItems($request->all());
 
-        $category = Category::create();
-
-        foreach ($names as $key => $value) {
-            $category->translations()->create([
-                'lang' => $key,
-                'name' => $value
-            ]);
-        }
-
-        return response()->json($category, 201);
+        return response()->json(['success' => true], 201);
     }
 
     public function show($id)
     {
         $category = Category::findOrFail($id);
 
-        return response()->json((new CategoryResource($category)));
+        return response()->json(new CategoryResource($category));
     }
 
     public function update(CategoryRequest $request, $id)
     {
-        $category = $request->input('data');
-
-        foreach ($category['translations'] as $translation) {
-            Translation::find($translation['id'])->update(
-                Arr::only($translation, ['name', 'description'])
-            );
-        }
+        Category::updateItems($request->all());
 
         return response()->json(['success' => true], 200);
     }

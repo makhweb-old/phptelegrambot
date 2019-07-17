@@ -4,7 +4,7 @@
       <v-card>
         <div class="pa-4">
           <div>
-            <h3 class="headline pb-3">{{items.locales.ru}}</h3>
+            <h3 class="headline pb-3">Category {{id}}</h3>
           </div>
           <v-form ref="form" lazy-validation>
             <v-text-field
@@ -16,7 +16,7 @@
               required
             ></v-text-field>
             <v-layout row wrap>
-              <v-flex xs12 md4 v-for="(item) in items.products" :key="item.id * 999">
+              <v-flex xs12 md4 v-for="(item,key) in items.products" :key="key * 999">
                 <v-card class="mr-3">
                   <v-img :src="item.photo" height="300px">
                     <v-layout column fill-height>
@@ -62,13 +62,12 @@
                       </div>
                     </v-form>
                   </v-list>
-                  <v-btn block color="warning" @click="deleteProduct(item.id)">Delete</v-btn>
                 </v-card>
               </v-flex>
             </v-layout>
           </v-form>
           <v-btn block color="primary" @click="openModal">Add new</v-btn>
-          <v-btn block color="success" @click="update">Save</v-btn>
+          <v-btn block color="success" @click="save">Save</v-btn>
         </div>
       </v-card>
     </v-flex>
@@ -116,10 +115,26 @@
 </template>
 <script>
 import UploadImage from "../../ui/UploadImage";
+
 export default {
   data: () => ({
-    items: [],
-    checkbox: false,
+    items: {
+      translations: [
+        {
+          lang: "uz",
+          name: null
+        },
+        {
+          lang: "ru",
+          name: null
+        },
+        {
+          lang: "en",
+          name: null
+        }
+      ],
+      products: []
+    },
     dialog: false,
     product: [],
     defaultProduct: {
@@ -149,49 +164,23 @@ export default {
     UploadImage
   },
 
-  created() {
-    this.defaultProduct.category_id = this.id;
-    this.fetch();
-  },
-
   methods: {
-    async fetch() {
-      await this.$store.dispatch("categories/fetchOne", this.id);
-      this.items = this.$store.getters["categories/item"];
-    },
-    update() {
-      this.$store.dispatch("categories/update", this.items).then(() => {
-        alert("Success!");
-        this.fetch();
-      });
-    },
     openModal() {
       this.product = JSON.parse(JSON.stringify(this.defaultProduct));
       this.dialog = true;
     },
-    imgPath(file) {
-      return Laravel.siteUrl + "/photos/" + file;
-    },
-    deleteProduct(id) {
-      if (confirm("Are you sure?")) {
-        this.$store.dispatch("products/delete", id).then(() => {
-          this.fetch();
-        });
-      }
-    },
     saveProduct() {
-      this.$store.dispatch("products/save", this.product).then(() => {
-        this.dialog = false;
-        this.fetch();
+      this.items.products.push(this.product);
+      this.dialog = false;
+    },
+    save() {
+      this.$store.dispatch("categories/save", this.items).then(() => {
+        alert("Success!");
+        this.$router.push({ name: "categories" });
       });
     }
   },
   computed: {
-    id: {
-      get() {
-        return this.$route.params.id;
-      }
-    },
     locales: {
       get() {
         return {
