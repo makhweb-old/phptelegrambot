@@ -36,4 +36,12 @@ class Product extends Model
     {
         return $this->morphMany(Translation::class, 'translatable');
     }
+
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($product) {
+             $product->translations()->delete();
+        });
+    }
 }

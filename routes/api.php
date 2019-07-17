@@ -22,8 +22,11 @@ Route::group(['middleware' => ['guest:api']], function() {
 });
 
 Route::apiResource('categories', 'CategoryController');
+Route::apiResource('products', 'ProductController');
+
 Route::post('users','TelegramController@usersIndex');
 Route::post('sendMessage','TelegramController@sendMessage');
+Route::post('upload','ApiController@upload');
 
 Route::group(['middleware' => ['jwt']], function() {
     Route::post('logout', 'Auth\LoginController@logout');
@@ -32,5 +35,3 @@ Route::group(['middleware' => ['jwt']], function() {
     Route::put('profile', 'ProfileController@update');
 
 });
-
-Route::resource('products', 'ProductsController');Route::resource('products', 'ProductController');

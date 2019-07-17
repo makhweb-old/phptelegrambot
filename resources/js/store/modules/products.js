@@ -28,7 +28,7 @@ export const actions = {
   },
   async save({ dispatch }, payload) {
     await axios.post(api.path("products"), {
-      data: payload
+      ...payload
     });
     dispatch("fetch");
   },

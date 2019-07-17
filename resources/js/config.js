@@ -48,6 +48,7 @@ export const api = Object.assign(new URL(apiUrl), {
   categories: 'categories',
 
   products: 'products',
+  upload: 'upload',
 
   register: 'register',
   sendMessage: 'sendMessage',

@@ -53,4 +53,12 @@ class Category extends Model
     {
         return $this->morphMany(Translation::class, 'translatable');
     }
+
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($category) {
+             $category->translations()->delete();
+        });
+    }
 }

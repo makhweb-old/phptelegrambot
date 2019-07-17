@@ -17,7 +17,13 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
-        $product = Product::create($request->all());
+        $product = Product::create(
+            $request->only(['photo', 'price', 'category_id'])
+        );
+
+        foreach ($request->input('translations') as $translation) {
+            $product->translations()->create($translation);
+        }
 
         return response()->json($product, 201);
     }
