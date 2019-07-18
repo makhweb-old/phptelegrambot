@@ -55,8 +55,8 @@ class InlinequeryCommand extends SystemCommand
         )->selected_language;
         $this->data = ['inline_query_id' => $this->inline_query->getId()];
         $this->results = [];
-        $this->category = Category::find(15);
-
+        $this->category = Category::find(base64_decode($this->query));
+        
         if ($this->category) {
             $articles = $this->category->products->map(function ($product) {
                 return [
@@ -75,11 +75,11 @@ class InlinequeryCommand extends SystemCommand
                     'input_message_content' => new InputTextMessageContent([
                         'message_text' => base64_encode($product->id)
                     ]),
-                    'thumb_url' => $product->photo
+                    'thumb_url' =>
+                        'https://s82079.cdn.ngenix.net/Ktb3tEibfVFeZLr71uqeLqWg.png'
                 ];
             });
 
-            dd($articles);
             foreach ($articles as $article) {
                 $results[] = new InlineQueryResultArticle($article);
             }

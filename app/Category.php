@@ -26,7 +26,7 @@ class Category extends Model
 
     public function scopeData()
     {
-        return self::paginate(self::PER_PAGE)->toArray();
+        return self::paginate(self::PER_PAGE);
     }
 
     public static function lastPage()
@@ -97,5 +97,14 @@ class Category extends Model
     {
         Product::updateItems($items['products']);
         Translation::updateItems($items['translations']);
+    }
+
+    public function getWithTranslations($lang, $column = 'name')
+    {
+        return $this->translations()
+            ->whereLang($lang)
+            ->get()
+            ->pluck($column)
+            ->first();
     }
 }

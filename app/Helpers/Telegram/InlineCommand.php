@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Telegram;
 
+use App\TelegramUser;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 use Illuminate\Pagination\Paginator;

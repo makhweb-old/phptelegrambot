@@ -33,6 +33,7 @@
     "vue-chartkick": "^0.5.2",
     "vue-markdown": "^2.2.4",
     "vue-pell-editor": "^2.0.1",
+    "vue-simplemde": "^1.0.0",
     "vue2-medium-editor": "^1.1.6",
     "vuetify-markdown-editor": "^0.4.1"
   }

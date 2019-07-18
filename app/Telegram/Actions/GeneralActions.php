@@ -21,15 +21,18 @@ trait GeneralActions
         $text = null,
         $keyboard = []
     ) {
-        foreach ($items['data'] as $item) {
+        $className = "App\\" . ucfirst($type);
+        $pagination = call_user_func($className . '::lastPage') !== 1;
+
+        foreach ($items as $item) {
             $keyboard[][] = [
-                "text" => $item['name'],
+                "text" => $item->getWithTranslations(
+                    $this->user->selected_language
+                ),
                 'switch_inline_query_current_chat' => base64_encode($item['id'])
             ];
         }
-        $className = "App\\" . ucfirst($type);
-        $pagination = call_user_func($className . '::lastPage') !== 1;
-        dump($pagination);
+
         $keyboard = array_merge(
             $keyboard,
             [
@@ -41,6 +44,7 @@ trait GeneralActions
                     ["text" => 'Basket 📥', "callback_data" => "show_basket"]
                 ]
             ],
+
             $pagination
                 ? $this->addPaginationButtons(
                     $items['current_page'],
