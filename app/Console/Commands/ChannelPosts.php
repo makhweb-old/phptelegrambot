@@ -45,7 +45,7 @@ class ChannelPosts extends Command
         );
         $maxId = Post::max('id');
         $messages = $this->madeline->messages->getHistory([
-            'peer' => '@lambreshop_uz',
+            'peer' => config('app.telegram_channel'),
             'offset_id' => 0,
             'offset_date' => 0,
             'add_offset' => 0,

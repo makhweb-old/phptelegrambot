@@ -53,6 +53,11 @@ export default [
             component: require("$comp/admin/dashboard").default
           },
           {
+            path: "stats",
+            name: "stats",
+            component: require("$comp/admin/statics").default
+          },
+          {
             path: "categories",
             name: "categories",
             component: require("$comp/admin/categories").default

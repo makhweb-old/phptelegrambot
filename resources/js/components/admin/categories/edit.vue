@@ -2,7 +2,8 @@
   <v-layout>
     <v-flex xs12 sm8 offset-sm2 offset-xs0>
       <v-card>
-        <div class="pa-4">
+        <v-progress-linear indeterminate color="primary darken-2" v-if="!loaded"></v-progress-linear>
+        <div class="pa-4" v-if="loaded" >
           <div>
             <h3 class="headline pb-3">{{items.locales.ru}}</h3>
           </div>
@@ -76,7 +77,7 @@
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
           <v-card-title>
-            <span class="headline">User Profile</span>
+            <span class="headline">Product</span>
           </v-card-title>
 
           <v-container grid-list-md>
@@ -122,6 +123,7 @@ export default {
     checkbox: false,
     dialog: false,
     product: [],
+    loaded:false,
     defaultProduct: {
       translations: [
         {
@@ -158,6 +160,7 @@ export default {
     async fetch() {
       await this.$store.dispatch("categories/fetchOne", this.id);
       this.items = this.$store.getters["categories/item"];
+      this.loaded = true;
     },
     update() {
       this.$store.dispatch("categories/update", this.items).then(() => {

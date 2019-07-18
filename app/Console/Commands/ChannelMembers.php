@@ -43,7 +43,7 @@ class ChannelMembers extends Command
             storage_path('framework\sessions\TELEGRAM_SESSION_FILE')
         );
 
-        $members_count = $this->madeline->get_full_info('@lambreshop_uz')['full'][
+        $members_count = $this->madeline->get_full_info(config('app.telegram_channel'))['full'][
             'participants_count'
         ];
 

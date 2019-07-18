@@ -1,75 +1,76 @@
 const siteUrl = Laravel.siteUrl,
-  apiUrl = Laravel.apiUrl
+  apiUrl = Laravel.apiUrl;
 
 export const settings = {
   siteName: Laravel.siteName
-}
+};
 
 class URL {
   constructor(base) {
-    this.base = base
+    this.base = base;
   }
 
   path(path, args) {
-    path = path.split('.')
+    path = path.split(".");
     let obj = this,
-      url = this.base
+      url = this.base;
 
     for (let i = 0; i < path.length && obj; i++) {
       if (obj.url) {
-        url += '/' + obj.url
+        url += "/" + obj.url;
       }
 
-      obj = obj[path[i]]
+      obj = obj[path[i]];
     }
     if (obj) {
-      url = url + '/' + (typeof obj === 'string' ? obj : obj.url)
+      url = url + "/" + (typeof obj === "string" ? obj : obj.url);
     }
 
     if (args) {
       for (let key in args) {
-        url = url.replace(':' + key, args[key])
+        url = url.replace(":" + key, args[key]);
       }
     }
 
-    return url
+    return url;
   }
 }
 
 export const api = Object.assign(new URL(apiUrl), {
-  url: '',
+  url: "",
 
   login: {
-    url: 'login',
-    refresh: 'refresh'
+    url: "login",
+    refresh: "refresh"
   },
-  users: 'users',
-  logout: 'logout',
-  categories: 'categories',
+  users: "users",
+  logout: "logout",
+  categories: "categories",
 
-  products: 'products',
-  upload: 'upload',
+  products: "products",
+  upload: "upload",
+  stats: "stats",
 
-  register: 'register',
-  sendMessage: 'sendMessage',
+  register: "register",
+  sendMessage: "sendMessage",
 
   password: {
-    url: 'password',
-    forgot: 'email',
-    reset: 'reset'
+    url: "password",
+    forgot: "email",
+    reset: "reset"
   },
 
-  me: 'me',
+  me: "me",
 
   users: {
-    url: 'users',
+    url: "users",
 
-    activate: ':id/activate',
-    single: ':id',
-    restore: ':id/restore'
+    activate: ":id/activate",
+    single: ":id",
+    restore: ":id/restore"
   },
 
   profile: {
-    url: 'profile'
+    url: "profile"
   }
-})
+});

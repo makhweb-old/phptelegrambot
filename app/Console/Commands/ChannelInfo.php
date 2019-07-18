@@ -48,7 +48,7 @@ class ChannelInfo extends Command
             storage_path('framework\sessions\TELEGRAM_SESSION_FILE')
         );
 
-        $info = $this->madeline->get_full_info('@lambreshop_uz');
+        $info = $this->madeline->get_full_info(config('app.telegram_channel'));
         $path = $this->downloadPhoto(
             $this->madeline->get_download_info($info['full']['chat_photo'])
         );

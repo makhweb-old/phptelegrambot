@@ -19,11 +19,12 @@ Route::get('/product/{locale}/{id}', function ($locale, $id) {
 });
 
 Route::match(['get', 'post'], 'test', function () {
-	$madeline = new danog\MadelineProto\API(
+    $madeline = new danog\MadelineProto\API(
         storage_path('framework\sessions\TELEGRAM_SESSION_FILE')
     );
+
     $messages = $madeline->messages->getHistory([
-        'peer' => '@lambreshop_uz',
+        'peer' => config('app.telegram_channel'),
         'offset_id' => 0,
         'offset_date' => 0,
         'add_offset' => 0,
@@ -32,8 +33,7 @@ Route::match(['get', 'post'], 'test', function () {
         'min_id' => 0,
         'hash' => 0
     ]);
-    dump($messages);
-
+    dd($messages['messages']);
 });
 Route::any('{all}', function () {
     return view('app');

@@ -11,11 +11,14 @@
 |
 */
 
-Route::group(['middleware' => ['guest:api']], function() {
+Route::group(['middleware' => ['guest:api']], function () {
     Route::post('login', 'Auth\LoginController@login');
     Route::post('login/refresh', 'Auth\LoginController@refresh');
 
-    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+    Route::post(
+        'password/email',
+        'Auth\ForgotPasswordController@sendResetLinkEmail'
+    );
     Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
     Route::post('register', 'Auth\RegisterController@register');
@@ -24,14 +27,14 @@ Route::group(['middleware' => ['guest:api']], function() {
 Route::apiResource('categories', 'CategoryController');
 Route::apiResource('products', 'ProductController');
 
-Route::post('users','TelegramController@usersIndex');
-Route::post('sendMessage','TelegramController@sendMessage');
-Route::post('upload','ApiController@upload');
+Route::get('stats', 'ApiController@stats');
+Route::post('users', 'TelegramController@usersIndex');
+Route::post('sendMessage', 'TelegramController@sendMessage');
+Route::post('upload', 'ApiController@upload');
 
-Route::group(['middleware' => ['jwt']], function() {
+Route::group(['middleware' => ['jwt']], function () {
     Route::post('logout', 'Auth\LoginController@logout');
 
     Route::get('me', 'Auth\LoginController@me');
     Route::put('profile', 'ProfileController@update');
-
 });
