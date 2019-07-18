@@ -155,7 +155,7 @@ export default {
     subs: {
       get() {
         const subscribers = Object.values(this.members);
-        return subscribers[subscribers.length - 1];
+        return subscribers[0];
       }
     }
   }
