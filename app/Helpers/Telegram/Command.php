@@ -3,6 +3,7 @@
 namespace App\Helpers\Telegram;
 
 use File;
+use Illuminate\Support\Str;
 use App\TelegramUser;
 use App\Telegram\Actions\DefaultActions;
 use App\Telegram\Actions\GeneralActions;
@@ -27,9 +28,9 @@ class Command extends SystemCommand
 
     protected function get($key)
     {
-        if(array_key_exists($key,$this->notes)){
+        if (array_key_exists($key, $this->notes)) {
             return $this->notes[$key];
-        };
+        }
     }
 
     protected function set($key, $payload)
@@ -107,16 +108,6 @@ class Command extends SystemCommand
         return $this->getKey('value', $type, $text);
     }
 
-    protected function getState()
-    {
-        return $this->get('state');
-    }
-
-    protected function setState($payload)
-    {
-        $this->set('state', $payload);
-    }
-
     protected function getSelectedProduct()
     {
         return $this->get('selected_product');
@@ -125,6 +116,16 @@ class Command extends SystemCommand
     protected function setSelectedProduct($payload)
     {
         return $this->set('selected_product', $payload);
+    }
+
+    protected function getState()
+    {
+        return $this->get('state');
+    }
+
+    protected function setState($payload)
+    {
+        $this->set('state', $payload);
     }
 
     protected function getButtons($buttons)
@@ -244,7 +245,7 @@ class Command extends SystemCommand
 
     protected function getMethodName($name)
     {
-        return "get" . snakeCaseToCamelCase($name, true) . "Action";
+        return "get" . Str::studly($name) . "Action";
     }
 
     protected function runAction($action, $sendBody = false)

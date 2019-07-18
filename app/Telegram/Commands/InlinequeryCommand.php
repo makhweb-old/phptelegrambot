@@ -11,6 +11,7 @@
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use App\Category;
+use App\TelegramUser;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\InlineQuery\InlineQueryResultArticle;
 use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
@@ -46,20 +47,31 @@ class InlinequeryCommand extends SystemCommand
      */
     public function execute()
     {
-        $inline_query = $this->getInlineQuery();
-        $query = $inline_query->getQuery();
+        $this->inline_query = $this->getInlineQuery();
+        $this->query = $this->inline_query->getQuery();
+        $this->userId = $this->inline_query->getFrom()->getId();
+        $this->userLanguage = TelegramUser::find(
+            $this->userId
+        )->selected_language;
+        $this->data = ['inline_query_id' => $this->inline_query->getId()];
+        $this->results = [];
+        $this->category = Category::find(15);
 
-        $data = ['inline_query_id' => $inline_query->getId()];
-        $results = [];
-
-        $category = Category::find(base64_decode($query));
-
-        if ($category) {
-            $articles = $category->products->map(function ($product) {
+        if ($this->category) {
+            $articles = $this->category->products->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'title' => $product->name . ' - ' . $product->price,
-                    'description' => $product->description,
+                    'title' =>
+                        $product->getWithTranslations(
+                            'name',
+                            $this->userLanguage
+                        ) .
+                        ' - ' .
+                        $product->price,
+                    'description' => $product->getWithTranslations(
+                        'description',
+                        $this->userLanguage
+                    ),
                     'input_message_content' => new InputTextMessageContent([
                         'message_text' => base64_encode($product->id)
                     ]),
@@ -67,15 +79,20 @@ class InlinequeryCommand extends SystemCommand
                 ];
             });
 
+            dd($articles);
             foreach ($articles as $article) {
                 $results[] = new InlineQueryResultArticle($article);
             }
 
-            $data['results'] = '[' . implode(',', $results) . ']';
+            $this->data['results'] = '[' . implode(',', $results) . ']';
         } else {
-            $data['results'] = '[]';
+            $this->data['results'] = '[]';
         }
 
-        return Request::answerInlineQuery($data);
+        return Request::answerInlineQuery($this->data);
+    }
+
+    protected function define()
+    {
     }
 }

@@ -37,6 +37,8 @@ class InlineCommand extends SystemCommand
             $this->chat_id,
             "start"
         );
+
+        $this->user = TelegramUser::getData($this->user_id);
         $this->notes = &$this->conversation->notes;
         $this->callback_data = $this->callback_query->getData();
     }

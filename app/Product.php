@@ -56,4 +56,13 @@ class Product extends Model
             Translation::updateItems($item['translations']);
         }
     }
+
+    public function getWithTranslations($column, $lang)
+    {
+        return $this->translations()
+            ->whereLang($lang)
+            ->get()
+            ->pluck($column)
+            ->first();
+    }
 }
