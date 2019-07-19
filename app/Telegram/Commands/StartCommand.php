@@ -68,7 +68,7 @@ class StartCommand extends Command
     // Constants
     const MENU_ACTION = "main_menu";
 
-    const IS_LOCAL = true;
+    const IS_LOCAL = false;
 
     const NEED_PHONE_NUMBER = true;
 

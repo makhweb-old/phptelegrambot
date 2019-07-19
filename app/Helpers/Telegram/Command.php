@@ -238,10 +238,11 @@ class Command extends SystemCommand
     {
         try {
             return Request::sendMessage($this->getData());
-        } catch (\ErrorException $e) {
+        } catch (\Throwable $e) {
             if (static::IS_LOCAL) {
                 $this->logError($e);
             }
+            $this->runAction(static::MENU_ACTION, true);
         }
     }
 }

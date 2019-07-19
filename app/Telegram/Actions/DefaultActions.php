@@ -58,10 +58,17 @@ trait DefaultActions
             return $data;
         }
 
+        //Validating
+        if ($this->message->getContact()->getUserId() !== $this->user_id) {
+            $data['text'] = 'Send your number plz:';
+            $data['reply_markup'] = $this->requestContact();
+
+            return $data;
+        }
         $this->phone_number = $this->message->getContact()->getPhoneNumber();
 
         TelegramUser::find($this->user_id)->update([
-            'phone_number' => $this->phone_number
+            'phone_number' => trim($this->phone_number, '+')
         ]);
 
         return $this->runAction(static::MENU_ACTION, true);

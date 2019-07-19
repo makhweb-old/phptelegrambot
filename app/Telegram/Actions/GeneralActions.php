@@ -54,6 +54,7 @@ trait GeneralActions
                 : [],
             $backAction ? $this->addBackButton($backAction) : []
         );
+
         $keyboard = new InlineKeyboard(...$keyboard);
 
         $data['text'] = $text ?? "Choose:";
@@ -76,7 +77,7 @@ trait GeneralActions
                 ],
                 [
                     "text" => "Page: {$current}/{$count}",
-                    "callback_data" => "emptyResult"
+                    "callback_data" => "emptyResponse"
                 ],
                 [
                     "text" => "▶️",
@@ -143,6 +144,11 @@ trait GeneralActions
         }
     }
 
+    protected function getEmptyResponseAction($data)
+    {
+        return $data;
+    }
+
     protected function getBackAction($data)
     {
         $this->removeFirstElementCallbackData();
@@ -150,12 +156,15 @@ trait GeneralActions
     }
     protected function getInstantView($id)
     {
-        return "https://t.me/iv?url=http://ce612341.ngrok.io/product/en/$id&rhash=873c4ac3fb2b6a";
+        return "https://t.me/iv?url=http://ce612341.ngrok.io/product/{$this->language}/$id&rhash=873c4ac3fb2b6a";
     }
 
     private function getProductText($product, $count)
     {
-        $out = "*{$product->name}*\r\n\n";
+        $out =
+            "*" .
+            $product->getWithTranslations('name', $this->language) .
+            "*\r\n\n";
         $out .=
             "[🛍Description](" . $this->getInstantView($product->id) . ")\r\n\n";
         $out .= "📌*Price:* {$product->price} som\r\n";
@@ -201,8 +210,8 @@ trait GeneralActions
     {
         $arguments = explode('_', $this->getArgument());
         $basketData = array_combine(['product_id', 'count'], $arguments);
+        $this->appendToBasket($basketData);
 
-        $this->setBasket($basketData);
         return $this->getInlineKeyboard(
             'category',
             Category::data(),
@@ -217,6 +226,7 @@ trait GeneralActions
     {
         $total = 0;
         $out = "📥 Basket:\r\n\n";
+
         foreach ($this->getBasket() as $basket) {
             // issue
             // Product::find([]);
@@ -224,7 +234,10 @@ trait GeneralActions
             $product = Product::find($basket['product_id']);
             $total += $basket['count'] * $product->price;
 
-            $out .= "*{$product->name}*\r\n";
+            $out .=
+                "*" .
+                $product->getWithTranslations('name', $this->language) .
+                "*\r\n";
             $out .=
                 $basket['count'] .
                 " x " .
@@ -239,6 +252,12 @@ trait GeneralActions
 
     protected function getShowBasketAction($data)
     {
+        if (!$this->getBasket()) {
+            $data['show_alert'] = true;
+            $data['text'] = 'Your basket is empty!';
+            return $data;
+        }
+
         $data['text'] = $this->showBasketText();
         $data['parse_mode'] = 'markdown';
         $data['reply_markup'] = new InlineKeyboard(
@@ -250,6 +269,7 @@ trait GeneralActions
             ],
             ...$this->addBackButton('category_list')
         );
+
         return $data;
     }
 

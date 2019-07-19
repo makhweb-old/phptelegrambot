@@ -39,8 +39,11 @@ class TelegramBot extends Command
      */
     public function handle(PhpTelegramBotContract $telegram_bot)
     {
-        while(true){
-            $telegram_bot->handleGetUpdates();
+        while (true) {
+            try {
+                $telegram_bot->handleGetUpdates();
+            } catch (\Throwable $e) {
+            }
         }
     }
 }

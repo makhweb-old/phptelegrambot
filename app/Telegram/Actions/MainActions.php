@@ -68,29 +68,7 @@ trait MainActions
 
     protected function getInformAction($data, $sendBody)
     {
-        if ($this->callback_query) {
-            $this->callback_data = $this->callback_query->getData();
-        }
-        $chat_id = $this->getMessage()
-            ->getChat()
-            ->getId();
-
-        $switch_element = mt_rand(0, 9) < 5 ? 'true' : 'false';
-
-        $inline_keyboard = new InlineKeyboard(
-            [['text' => 'callback', 'callback_data' => 'identifier']],
-            [['text' => 'callback', 'callback_data' => 'identifier']],
-            [['text' => 'callback', 'callback_data' => 'identifier']],
-            [['text' => 'callback', 'callback_data' => 'identifier']]
-        );
-
-        $data = [
-            'chat_id' => $chat_id,
-            'text' => $this->callback_data ?? 'inline keyboard',
-            'reply_markup' => $inline_keyboard
-        ];
-
-        return $data;
+        
     }
 
     protected function getSettingsAction($data, $sendBody)
@@ -173,6 +151,7 @@ trait MainActions
             $data['text'] = "Success✅";
             Request::sendMessage($data);
             //saving!!!
+            $this->setBasket([]);
             return $this->runAction(self::MENU_ACTION, true);
         }
     }

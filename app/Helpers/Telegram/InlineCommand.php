@@ -31,15 +31,14 @@ class InlineCommand extends SystemCommand
             ->getChat()
             ->getId();
         $this->user = $this->callback_query->getMessage()->getFrom();
-        $this->user_id = $this->user->getId();
-        //Custom
+
+        //chat_id == user_id
         $this->conversation = new Conversation(
             $this->chat_id,
             $this->chat_id,
             "start"
         );
-
-        $this->user = TelegramUser::getData($this->user_id);
+        $this->user = TelegramUser::getData($this->chat_id);
         $this->language = $this->user->selected_language;
         $this->phone_number = $this->user->phone_number;
         $this->notes = &$this->conversation->notes;
@@ -62,6 +61,11 @@ class InlineCommand extends SystemCommand
     }
 
     protected function setBasket($payload)
+    {
+        return $this->set('basket', $payload);
+    }
+
+    protected function appendToBasket($payload)
     {
         $items = $this->getBasket() ?? [];
         $index = 0;
@@ -117,6 +121,7 @@ class InlineCommand extends SystemCommand
         //run method😏
 
         $this->defineVariables();
+
         if (method_exists($this, $this->getActionName($this->getAction()))) {
             return $this->runQueryAction(
                 $this->getActionName($this->getAction())
@@ -142,19 +147,19 @@ class InlineCommand extends SystemCommand
     {
         try {
             return Request::editMessageText($this->getData());
-        } catch (\ErrorException $e) {
-            // info($e) :)
+        } catch (\Throwable $e) {
+            $this->updateState('main_menu');
         }
     }
 
-    protected function answerCallback($data)
+    protected function answerCallback($text)
     {
-        //$data = [
-        //    'callback_query_id' => $this->callback_query_id,
-        //    'show_alert'        => true,
-        //    'cache_time'        => 5,
-        //];
-        //array_push()
-        //return Request::answerCallbackQuery($data);
+        $data = [
+            'callback_query_id' => $this->callback_query_id,
+            'show_alert' => true,
+            'cache_time' => 5,
+            'text' => $text
+        ];
+        return Request::answerCallbackQuery($data);
     }
 }
