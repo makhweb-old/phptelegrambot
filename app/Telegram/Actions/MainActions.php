@@ -3,6 +3,7 @@
 namespace App\Telegram\Actions;
 
 use App\Product;
+use App\TelegramUser;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\Keyboard;
@@ -95,7 +96,35 @@ trait MainActions
     protected function getSettingsAction($data, $sendBody)
     {
         $data['text'] = 'Hello From Settings!!!';
+        $data['reply_markup'] = $this->getButtons($this->getState());
         return $data;
+    }
+
+    protected function getChangeLangAction($data, $sendBody)
+    {
+        if ($sendBody) {
+            $data['text'] = 'Select your language:';
+            $data['reply_markup'] = $this->getButtons('select_lang');
+
+            return $data;
+        }
+
+        $lang = $this->getValue('select_lang', $this->text);
+
+        if (!$lang) {
+            $data['text'] = 'Select your language:';
+            $data['reply_markup'] = $this->getButtons('select_lang');
+
+            return $data;
+        }
+
+        $this->language = $lang;
+
+        TelegramUser::find($this->user_id)->update([
+            'selected_language' => $this->language
+        ]);
+        
+        return $this->runAction('settings', true);
     }
 
     private function getProductText($product, $count)
@@ -113,7 +142,7 @@ trait MainActions
 
     protected function getHandleProductAction($data, $sendBody)
     {
-        if($product = Product::find(base64_decode($this->text))){
+        if ($product = Product::find(base64_decode($this->text))) {
             $count = 1;
             $data['text'] = $this->getProductText($product, $count);
             $data['reply_markup'] = new InlineKeyboard(
@@ -126,10 +155,10 @@ trait MainActions
                 ]
             );
             $data['parse_mode'] = 'markdown';
-        }else{
+        } else {
             $data['text'] = 'Product not found!';
         }
-        
+
         return $data;
     }
 

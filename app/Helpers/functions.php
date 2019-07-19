@@ -13,3 +13,17 @@ function snakeCaseToCamelCase($string)
 {
     return ucfirst(Str::camel($string));
 }
+
+function array_check_key($multidimensionalArray, $arrKey)
+{
+    $recursive = new RecursiveIteratorIterator(
+        new RecursiveArrayIterator($multidimensionalArray)
+    );
+    foreach ($recursive as $key => $value) {
+        if ($key == $arrKey) {
+            return true;
+        }
+    }
+
+    return false;
+}

@@ -1,0 +1,40 @@
+{
+  "main_menu": [
+    { "text": "order", "action": "order_menu" },
+    { "text": "cashback", "action": "cashback_menu" },
+    [
+      { "text": "leave feedback", "action": "feedback" },
+      { "text": "information", "action": "inform" }
+    ],
+    { "text": "settings", "action": "settings" }
+  ],
+  "order_menu": [
+    [
+      { "text": "delivery", "action": "category_list" },
+      { "text": "take away", "action": "takeaway_delivery" }
+    ],
+    { "text": "back", "action": "main_menu" }
+  ],
+  "cashback_menu": [
+    { "text": "get a barcode", "action": "get_barcode" },
+    { "text": "menu", "action": "main_menu" }
+  ],
+  "settings": [
+    { "text": "change lang", "action": "change_lang" },
+    { "text": "back", "action": "main_menu" }
+  ],
+  "select_lang": [
+    {
+      "text": "English 🇬🇧",
+      "value": "en"
+    },
+    {
+      "text": "Russian 🇷🇺",
+      "value": "ru"
+    },
+    {
+      "text": "Uzbek 🇺🇿",
+      "value": "uz"
+    }
+  ]
+}

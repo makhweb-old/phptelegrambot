@@ -4,6 +4,7 @@ namespace App\Helpers\Telegram;
 
 use File;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use App\TelegramUser;
 use App\Telegram\Actions\DefaultActions;
 use App\Telegram\Actions\GeneralActions;
@@ -11,97 +12,14 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
-use Longman\TelegramBot\Commands\SystemCommand;
 
-class Command extends SystemCommand
+class Command extends TelegramBotCore
 {
     use DefaultActions, GeneralActions;
 
     const LANGUAGE_ACTION = "select_lang";
 
     const PHONE_NUMBER_ACTION = "phone_number";
-
-    protected function baseFolder()
-    {
-        return $this->language ?? 'default';
-    }
-
-    protected function get($key)
-    {
-        if (array_key_exists($key, $this->notes)) {
-            return $this->notes[$key];
-        }
-    }
-
-    protected function set($key, $payload)
-    {
-        $this->notes[$key] = $payload;
-    }
-
-    protected function getFilePath($filename)
-    {
-        return storage_path("telegram/{$this->baseFolder()}/{$filename}.json");
-    }
-
-    protected function getJson(string $filename)
-    {
-        return json_decode(File::get($this->getFilePath($filename)), true);
-    }
-
-    protected function getButtonsFromJson($type)
-    {
-        return $this->getJson('buttons')[$type] ?? [];
-    }
-
-    protected function getKeyboard(
-        $type,
-        $arrays = null,
-        $cycle = false,
-        $main = []
-    ) {
-        $arrays = $arrays ?? $this->getButtonsFromJson($type);
-
-        foreach ($arrays as $array) {
-            if (array_key_exists('text', $array)) {
-                $main[] = $cycle ? $array['text'] : array($array['text']);
-            } else {
-                $main[] = $this->getKeyboard($type, $array, true);
-            }
-        }
-        return $main;
-    }
-
-    protected function getOnlyArray($key, $payloads, $data = [])
-    {
-        foreach ($payloads as $payload) {
-            if (array_key_exists($key, $payload)) {
-                $data[] = $payload;
-            } else {
-                $data = $this->getOnlyArray($key, $payload, $data);
-            }
-        }
-
-        return $data;
-    }
-
-    protected function getKey($key, $type, $text, $arrays = null)
-    {
-        $json = $this->getOnlyArray($key, $this->getButtonsFromJson($type));
-        $arrays = $arrays ?? $json;
-
-        foreach ($arrays as $array) {
-            if ($array['text'] == $text) {
-                return $array[$key];
-            }
-        }
-
-        return false;
-    }
-
-    protected function getAction($type, $text)
-    {
-        return $this->getKey('action', $type, $text) ?? false;
-    }
 
     protected function getValue($type, $text)
     {
@@ -118,14 +36,72 @@ class Command extends SystemCommand
         return $this->set('selected_product', $payload);
     }
 
-    protected function getState()
+    protected function baseFolder()
     {
-        return $this->get('state');
+        return $this->language ?? 'default';
     }
 
-    protected function setState($payload)
+    protected function getFilePath($filename)
     {
-        $this->set('state', $payload);
+        return storage_path("telegram/{$this->baseFolder()}/{$filename}.json");
+    }
+
+    protected function getButtonsFromJson($type)
+    {
+        $json = json_decode(
+            File::get(storage_path("telegram/config/buttons.json")),
+            true
+        );
+
+        return Arr::get($json, $type);
+    }
+
+    protected function getKeyboard($type, $arrays = null)
+    {
+        $json = $this->getButtonsFromJson($type);
+        $cycle = is_array($arrays);
+        $arrays = $arrays ?? $json;
+
+        foreach ($arrays as $array) {
+            if (Arr::has($array, 'text')) {
+                $text = $this->__($array['text']);
+                $main[] = $cycle ? $text : Arr::wrap($text);
+            } else {
+                $main[] = $this->getKeyboard($type, $array, true);
+            }
+        }
+        return $main;
+    }
+
+    protected function loadArray($key, $payloads, $data = [])
+    {
+        if ($payloads && array_check_key($payloads, $key)) {
+            foreach ($payloads as $payload) {
+                if (array_key_exists($key, $payload)) {
+                    $data[] = $payload;
+                } else {
+                    $data = $this->loadArray($key, $payload, $data);
+                }
+            }
+
+            return $data;
+        }
+
+        return [];
+    }
+
+    protected function getKey($key, $type, $text, $arrays = null)
+    {
+        $json = $this->loadArray($key, $this->getButtonsFromJson($type));
+        $arrays = $arrays ?? $json;
+
+        foreach ($arrays as $array) {
+            if ($array['text'] == $text) {
+                return $array[$key];
+            }
+        }
+
+        return false;
     }
 
     protected function getButtons($buttons)
@@ -150,19 +126,14 @@ class Command extends SystemCommand
             ->setSelective(true);
     }
 
-    protected function translate($word)
-    {
-        return $this->getJson('texts')[$word] ?? $word;
-    }
-
     protected function defineVariables()
     {
         $this->update = $this->getUpdate();
         $this->callback_query = $this->update->getCallbackQuery();
         $this->message = $this->getMessage();
+
         $this->chat = $this->message->getChat();
         $this->user = $this->message->getFrom();
-        $this->text = trim($this->message->getText(true));
         $this->chat_id = $this->chat->getId();
         $this->user_id = $this->user->getId();
 
@@ -171,9 +142,7 @@ class Command extends SystemCommand
         ];
 
         if ($this->chat->isGroupChat() || $this->chat->isSuperGroup()) {
-            $this->data['reply_markup'] = Keyboard::forceReply([
-                'selective' => true
-            ]);
+            return Request::emptyResponse();
         }
 
         //Conversation start
@@ -182,13 +151,14 @@ class Command extends SystemCommand
             $this->chat_id,
             $this->getName()
         );
-
         $this->notes = &$this->conversation->notes;
 
         $this->user = TelegramUser::getData($this->user_id);
-
         $this->language = $this->user->selected_language;
         $this->phone_number = $this->user->phone_number;
+
+        //All data is loaded
+        $this->text = $this->__(trim($this->message->getText(true)), true);
     }
 
     protected function getData()
@@ -235,17 +205,6 @@ class Command extends SystemCommand
             'chat_id' => $this->chat_id,
             'reply_markup' => Keyboard::remove(['selective' => true])
         ];
-    }
-
-    protected function updateState($state)
-    {
-        $this->setState($state);
-        $this->conversation->update();
-    }
-
-    protected function getMethodName($name)
-    {
-        return "get" . Str::studly($name) . "Action";
     }
 
     protected function runAction($action, $sendBody = false)

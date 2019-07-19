@@ -14,19 +14,21 @@ trait DefaultActions
     {
         if ($sendBody) {
             $data['text'] = 'Select your language:';
-            $data['reply_markup'] = $this->getButtons("lang.menu");
+            $data['reply_markup'] = $this->getButtons($this->getState());
 
             return $data;
         }
 
-        if (!$this->getValue('lang.menu', $this->text)) {
+        $lang = $this->getValue($this->getState(), $this->text);
+
+        if (!$lang) {
             $data['text'] = 'Select your language:';
-            $data['reply_markup'] = $this->getButtons("lang.menu");
+            $data['reply_markup'] = $this->getButtons($this->getState());
 
             return $data;
         }
 
-        $this->language = $this->getValue('lang.menu', $this->text);
+        $this->language = $lang;
 
         TelegramUser::find($this->user_id)->update([
             'selected_language' => $this->language

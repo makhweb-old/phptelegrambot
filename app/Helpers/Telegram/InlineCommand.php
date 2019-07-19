@@ -10,7 +10,7 @@ use App\Telegram\Actions\GeneralActions;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 
-class InlineCommand extends SystemCommand
+class InlineCommand extends TelegramBotCore
 {
     use GeneralActions;
 
@@ -40,22 +40,12 @@ class InlineCommand extends SystemCommand
         );
 
         $this->user = TelegramUser::getData($this->user_id);
+        $this->language = $this->user->selected_language;
+        $this->phone_number = $this->user->phone_number;
         $this->notes = &$this->conversation->notes;
         $this->callback_data = $this->callback_query->getData();
     }
 
-    protected function get($key)
-    {
-        if(array_key_exists($key,$this->notes)){
-            return $this->notes[$key];
-        };
-    }
-
-    protected function set($key, $payload)
-    {
-        $this->notes[$key] = $payload;
-        $this->conversation->update();
-    }
 
     protected function getSelectedProduct()
     {
@@ -72,36 +62,20 @@ class InlineCommand extends SystemCommand
         return $this->get('basket');
     }
 
-    protected function updateState($state)
-    {
-        $this->setState($state);
-        $this->conversation->update();
-    }
-
-    protected function getState()
-    {
-        return $this->get('state');
-    }
-
-    protected function setState($payload)
-    {
-        $this->set('state', $payload);
-    }
 
     protected function setBasket($payload)
     {
         $items = $this->getBasket() ?? [];
         $index = 0;
         $exists = false;
-        foreach($items as $item){
-            if($item['product_id'] == $payload['product_id'])
-            {
+        foreach ($items as $item) {
+            if ($item['product_id'] == $payload['product_id']) {
                 $items[$index] = $payload;
                 $exists = true;
             }
             $index++;
         }
-        if(!$exists){
+        if (!$exists) {
             $items[] = $payload;
         }
         return $this->set('basket', $items);
@@ -146,7 +120,9 @@ class InlineCommand extends SystemCommand
 
         $this->defineVariables();
         if (method_exists($this, $this->getActionName($this->getAction()))) {
-            return $this->runQueryAction($this->getActionName($this->getAction()));
+            return $this->runQueryAction(
+                $this->getActionName($this->getAction())
+            );
         }
     }
 
@@ -166,7 +142,11 @@ class InlineCommand extends SystemCommand
 
     protected function run()
     {
-        return Request::editMessageText($this->getData());
+        try {
+            return Request::editMessageText($this->getData());
+        } catch (\ErrorException $e) {
+            // info($e) :)
+        }
     }
 
     protected function answerCallback($data)
