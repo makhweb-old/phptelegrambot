@@ -10,9 +10,9 @@ use App\Telegram\Actions\GeneralActions;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 
-class InlineCommand extends TelegramBotCore
+class InlineCommand extends SystemCommand
 {
-    use GeneralActions;
+    use TelegramBotCore, GeneralActions;
 
     protected function setCurrentPage($page)
     {
@@ -46,7 +46,6 @@ class InlineCommand extends TelegramBotCore
         $this->callback_data = $this->callback_query->getData();
     }
 
-
     protected function getSelectedProduct()
     {
         return $this->get('selected_product');
@@ -61,7 +60,6 @@ class InlineCommand extends TelegramBotCore
     {
         return $this->get('basket');
     }
-
 
     protected function setBasket($payload)
     {

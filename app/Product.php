@@ -15,19 +15,16 @@ class Product extends Model
 
     protected $with = ['translations'];
 
-    public function scopeData()
-    {
-        return self::paginate(self::PER_PAGE);
-    }
-
-    public static function lastPage()
-    {
-        return (int) ceil(self::count() / self::PER_PAGE);
-    }
+    protected $appends = ['photo_url'];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return url("photos/{$this->photo}");
     }
 
     /**

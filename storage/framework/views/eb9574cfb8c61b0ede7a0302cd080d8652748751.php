@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <!-- CSRF Token -->
-        <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>" />
 
         <meta property="og:site_name" content="KFC 🍔" />
         <meta
             name="telegram:channel"
-            content="{{ config('app.telegram_channel') }}"
+            content="<?php echo e(config('app.telegram_channel')); ?>"
         />
-        <meta property="og:image" content="{{$product->photo_url}}" />
+        <meta property="og:image" content="<?php echo e($product->photo_url); ?>" />
         <!-- Scripts -->
 
         <link
@@ -35,15 +35,17 @@
                     <div class="product">
                         <main role="main" class="container">
                             <h1>
-                                {{$product->getWithTranslations('name',request()->route('locale'))}}
+                                <?php echo e($product->getWithTranslations('name',request()->route('locale'))); ?>
+
                             </h1>
                             <img
                                 class="d-block mx-auto mw-100"
-                                src="{{$product->photo_url}}"
+                                src="<?php echo e($product->photo_url); ?>"
                                 alt=""
                             />
                             <p class="lead">
-                                {{$product->getWithTranslations('description',request()->route('locale'))}}
+                                <?php echo e($product->getWithTranslations('description',request()->route('locale'))); ?>
+
                             </p>
                         </main>
 
@@ -51,12 +53,10 @@
                             <div class="container">
                                 <span class="text-muted"
                                     ><a
-                                        href="https://t.me/{{
-                                            trim(
+                                        href="https://t.me/<?php echo e(trim(
                                                 config('app.telegram_channel'),
                                                 '@'
-                                            )
-                                        }}"
+                                            )); ?>"
                                         >Telegram channel</a
                                     ></span
                                 >
@@ -68,3 +68,4 @@
         </div>
     </body>
 </html>
+<?php /**PATH C:\OSPanel\domains\localhost\resources\views/product.blade.php ENDPATH**/ ?>

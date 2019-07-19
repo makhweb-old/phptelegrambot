@@ -16,3 +16,8 @@ export const SET_CATEGORY_ITEM = "SET_CATEGORY_ITEM";
  * stats.js
  */
 export const SET_STATS_DATA = "SET_STATS_DATA";
+
+/**
+ * products.js
+ */
+export const SET_PRODUCTS_DATA = "SET_PRODUCTS_DATA";

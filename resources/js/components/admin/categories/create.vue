@@ -18,7 +18,7 @@
             <v-layout row wrap>
               <v-flex xs12 md4 v-for="(item,key) in items.products" :key="key * 999">
                 <v-card class="mr-3">
-                  <v-img :src="item.photo" height="300px">
+                  <v-img :src="imgPath(item.photo)" height="300px">
                     <v-layout column fill-height>
                       <v-spacer></v-spacer>
                       <v-card-title class="white--text pl-5 pt-5">
@@ -81,7 +81,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex md12>
-                <v-img v-if="product.photo" class="white--text" :src="product.photo"/>
+                <v-img v-if="product.photo" class="white--text" :src="imgPath(product.photo)"/>
                 <UploadImage v-model="product.photo"/>
                 <v-text-field
                   label="Price"
@@ -165,6 +165,9 @@ export default {
   },
 
   methods: {
+    imgPath(filename){
+      return Laravel.siteUrl + '/photos/' + filename;
+    },
     openModal() {
       this.product = JSON.parse(JSON.stringify(this.defaultProduct));
       this.dialog = true;

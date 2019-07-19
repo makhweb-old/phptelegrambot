@@ -24,7 +24,7 @@ class ApiController extends Controller
         $photo->move(public_path('photos'), $photoName);
 
         return response()->json([
-            'url' => url("photos/$photoName")
+            'filename' => $photoName
         ]);
     }
 

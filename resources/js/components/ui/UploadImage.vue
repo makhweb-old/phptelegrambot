@@ -51,7 +51,7 @@ export default {
           }
         })
         .then(({ data }) => {
-          this.$emit("input", data.url);
+          this.$emit("input", data.filename);
           this.loading = false;
         });
     },

@@ -3,7 +3,7 @@
     <v-flex xs12 sm8 offset-sm2 offset-xs0>
       <v-card>
         <v-progress-linear indeterminate color="primary darken-2" v-if="!loaded"></v-progress-linear>
-        <div class="pa-4" v-if="loaded" >
+        <div class="pa-4" v-if="loaded">
           <div>
             <h3 class="headline pb-3">{{items.locales.ru}}</h3>
           </div>
@@ -19,7 +19,7 @@
             <v-layout row wrap>
               <v-flex xs12 md4 v-for="(item) in items.products" :key="item.id * 999">
                 <v-card class="mr-3">
-                  <v-img :src="item.photo" height="300px">
+                  <v-img :src="imgPath(item.photo)" height="300px">
                     <v-layout column fill-height>
                       <v-spacer></v-spacer>
                       <v-card-title class="white--text pl-5 pt-5">
@@ -68,6 +68,7 @@
               </v-flex>
             </v-layout>
           </v-form>
+          <v-btn block color="warning" @click="deleteCategory">Delete this category</v-btn>
           <v-btn block color="primary" @click="openModal">Add new</v-btn>
           <v-btn block color="success" @click="update">Save</v-btn>
         </div>
@@ -83,7 +84,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex md12>
-                <v-img v-if="product.photo" class="white--text" :src="product.photo"/>
+                <v-img v-if="product.photo" class="white--text" :src="imgPath(product.photo)"/>
                 <UploadImage v-model="product.photo"/>
                 <v-text-field
                   label="Price"
@@ -123,7 +124,7 @@ export default {
     checkbox: false,
     dialog: false,
     product: [],
-    loaded:false,
+    loaded: false,
     defaultProduct: {
       translations: [
         {
@@ -161,6 +162,14 @@ export default {
       await this.$store.dispatch("categories/fetchOne", this.id);
       this.items = this.$store.getters["categories/item"];
       this.loaded = true;
+    },
+    deleteCategory() {
+      if (confirm("Are you sure?")) {
+        this.$store.dispatch("categories/delete", this.id).then(() => {
+          alert("Success!");
+          this.$router.push({ name: "categories" });
+        });
+      }
     },
     update() {
       this.$store.dispatch("categories/update", this.items).then(() => {

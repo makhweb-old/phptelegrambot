@@ -34,7 +34,7 @@ export const actions = {
     const { data } = await axios.get(`${api.path("categories")}/${id}`);
     commit(types.SET_CATEGORY_ITEM, data);
   },
-  async save(payload) {
+  async save(context, payload) {
     await axios.post(api.path("categories"), payload);
   },
   async delete({ dispatch }, payload) {

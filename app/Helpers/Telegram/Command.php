@@ -11,11 +11,12 @@ use App\Telegram\Actions\GeneralActions;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\Keyboard;
+use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
-class Command extends TelegramBotCore
+class Command extends SystemCommand
 {
-    use DefaultActions, GeneralActions;
+    use TelegramBotCore, DefaultActions, GeneralActions;
 
     const LANGUAGE_ACTION = "select_lang";
 

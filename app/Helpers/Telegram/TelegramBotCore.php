@@ -6,7 +6,7 @@ use File;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Illuminate\Support\Str;
 
-class TelegramBotCore extends SystemCommand
+trait TelegramBotCore 
 {
     protected function get($key)
     {
