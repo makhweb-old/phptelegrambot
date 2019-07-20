@@ -156,7 +156,9 @@ trait GeneralActions
     }
     protected function getInstantView($id)
     {
-        return "https://t.me/iv?url=http://ce612341.ngrok.io/product/{$this->language}/$id&rhash=873c4ac3fb2b6a";
+        return "https://t.me/iv?url=" .
+            route('product', [$this->language, $id]) .
+            "&rhash=873c4ac3fb2b6a";
     }
 
     private function getProductText($product, $count)
@@ -228,9 +230,6 @@ trait GeneralActions
         $out = "📥 Basket:\r\n\n";
 
         foreach ($this->getBasket() as $basket) {
-            // issue
-            // Product::find([]);
-            // foreach -> for
             $product = Product::find($basket['product_id']);
             $total += $basket['count'] * $product->price;
 
@@ -245,20 +244,29 @@ trait GeneralActions
                 " = " .
                 number_format($basket['count'] * $product->price, 0, '.', ' ') .
                 " sum \r\n";
+            $buttons[] = [
+                [
+                    "text" =>
+                        "❌" .
+                        $product->getWithTranslations('name', $this->language),
+                    "callback_data" => "remove"
+                ]
+            ];
         }
         $out .= "\r\n*Total: * " . number_format($total, 0, '.', ' ') . " sum";
-        return $out;
+        return [$out, $buttons];
     }
 
     protected function getShowBasketAction($data)
     {
         if (!$this->getBasket()) {
-            $data['show_alert'] = true;
-            $data['text'] = 'Your basket is empty!';
+            $this->answerCallback('Your basket is empty!');
             return $data;
         }
-
-        $data['text'] = $this->showBasketText();
+        
+        [$out, $buttons] = $this->showBasketText();
+        
+        $data['text'] = $out;
         $data['parse_mode'] = 'markdown';
         $data['reply_markup'] = new InlineKeyboard(
             [
@@ -267,6 +275,7 @@ trait GeneralActions
                     "callback_data" => "show_checkout"
                 ]
             ],
+            ...$buttons,
             ...$this->addBackButton('category_list')
         );
 
@@ -294,18 +303,32 @@ trait GeneralActions
     protected function getCheckoutAction($data)
     {
         $this->deleteMessage($data);
-        Request::sendMessage([
-            'chat_id' => $this->chat_id,
-            'text' => 'Share your location, press the button!',
-            'reply_markup' => (new Keyboard(
-                (new KeyboardButton('Share Location'))->setRequestLocation(true)
-            ))
-                ->setOneTimeKeyboard(true)
-                ->setResizeKeyboard(true)
-                ->setSelective(true)
-        ]);
+
+        $this->sendMessage(
+            'Share your location, press the button!',
+            $this->requestLocation()
+        );
         $this->updateState('handle_location');
         return $data;
+    }
+
+    protected function requestLocation()
+    {
+        return (new Keyboard(
+            (new KeyboardButton('Share Location'))->setRequestLocation(true)
+        ))
+            ->setOneTimeKeyboard(true)
+            ->setResizeKeyboard(true)
+            ->setSelective(true);
+    }
+
+    protected function sendMessage($text, $replyMarkup)
+    {
+        return Request::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $text,
+            'reply_markup' => $replyMarkup
+        ]);
     }
 
     protected function deleteMessage($data)

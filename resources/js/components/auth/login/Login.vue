@@ -9,8 +9,7 @@
       </v-card-text>
     </v-card>
 
-    <div class="text-xs-center mt-2">Don't have an account? <router-link :to="{ name: 'register' }">Register</router-link></div>
-  </v-flex>
+ </v-flex>
 </template>
 
 <script>

@@ -23,7 +23,7 @@ trait MainActions
 
     protected function getMainMenuAction($data, $sendBody)
     {
-        $data['text'] = 'Great! Let’s place an order together? 😃';
+        $data['text'] = 'Great! Let’s place an order together? 😃 (from local pc)';
         $data['reply_markup'] = $this->getButtons($this->getState());
 
         return $data;

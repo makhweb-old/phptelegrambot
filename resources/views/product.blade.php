@@ -20,6 +20,8 @@
             rel="stylesheet"
         />
 
+        <title>{{$product->getWithTranslations('name',request()->route('locale'))}}</title>
+
         <!-- Styles -->
         <link
             rel="stylesheet"

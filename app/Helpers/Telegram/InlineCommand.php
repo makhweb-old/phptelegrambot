@@ -148,6 +148,7 @@ class InlineCommand extends SystemCommand
         try {
             return Request::editMessageText($this->getData());
         } catch (\Throwable $e) {
+            dump($e->getMessage());
             $this->updateState('main_menu');
         }
     }

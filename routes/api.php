@@ -20,16 +20,8 @@ Route::group(['middleware' => ['guest:api']], function () {
         'Auth\ForgotPasswordController@sendResetLinkEmail'
     );
     Route::post('password/reset', 'Auth\ResetPasswordController@reset');
-
-    Route::post('register', 'Auth\RegisterController@register');
 });
 
-Route::apiResource('categories', 'CategoryController');
-Route::apiResource('products', 'ProductController');
-
-Route::get('stats', 'ApiController@stats');
-Route::post('users', 'TelegramController@usersIndex');
-Route::post('sendMessage', 'TelegramController@sendMessage');
 Route::post('upload', 'ApiController@upload');
 
 Route::group(['middleware' => ['jwt']], function () {
@@ -37,4 +29,10 @@ Route::group(['middleware' => ['jwt']], function () {
 
     Route::get('me', 'Auth\LoginController@me');
     Route::put('profile', 'ProfileController@update');
+    Route::apiResource('categories', 'CategoryController');
+    Route::apiResource('products', 'ProductController');
+
+    Route::get('stats', 'ApiController@stats');
+    Route::post('users', 'TelegramController@usersIndex');
+    Route::post('sendMessage', 'TelegramController@sendMessage');
 });

@@ -14,7 +14,7 @@ Route::get('/product/{locale}/{id}', function ($locale, $id) {
     return view('product', [
         'product' => App\Product::findOrFail($id)
     ]);
-});
+})->name('product');
 
 Route::any('{all}', function () {
     return view('app');
