@@ -6,7 +6,7 @@ use File;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Illuminate\Support\Str;
 
-trait TelegramBotCore 
+trait TelegramBotCore
 {
     protected function get($key)
     {
@@ -26,16 +26,19 @@ trait TelegramBotCore
         return $this->getKey('action', $type, $text) ?? false;
     }
 
+    //added
     protected function getState()
     {
         return $this->get('state');
     }
 
+    //added
     protected function setState($payload)
     {
         $this->set('state', $payload);
     }
 
+    //added
     protected function __($word, $reverse = false)
     {
         $words = $this->getTexts();
@@ -52,6 +55,7 @@ trait TelegramBotCore
         $this->conversation->update();
     }
 
+    //added
     protected function getTexts()
     {
         if (!$this->language) {

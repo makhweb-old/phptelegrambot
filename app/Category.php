@@ -75,9 +75,11 @@ class Category extends Model
 
         if (!empty($items['products'])) {
             foreach ($items['products'] as $product) {
+                
                 $productModel = $category
                     ->products()
                     ->create(Arr::only($product, ['price', 'photo']));
+
                 foreach ($product['translations'] as $productTranslation) {
                     $productModel
                         ->translations()

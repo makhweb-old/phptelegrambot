@@ -16,6 +16,9 @@ function snakeCaseToCamelCase($string)
 
 function array_check_key($multidimensionalArray, $arrKey)
 {
+    if (empty($multidimensionalArray)) {
+        return false;
+    }
     $recursive = new RecursiveIteratorIterator(
         new RecursiveArrayIterator($multidimensionalArray)
     );
@@ -24,6 +27,4 @@ function array_check_key($multidimensionalArray, $arrKey)
             return true;
         }
     }
-
-    return false;
 }

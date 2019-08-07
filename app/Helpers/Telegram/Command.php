@@ -63,9 +63,10 @@ class Command extends SystemCommand
         $cycle = is_array($arrays);
         $arrays = $arrays ?? $json;
 
+
         foreach ($arrays as $array) {
             if (Arr::has($array, 'text')) {
-                $text = $this->__($array['text']);
+                $text = $array['text'];
                 $main[] = $cycle ? $text : Arr::wrap($text);
             } else {
                 $main[] = $this->getKeyboard($type, $array, true);
@@ -129,10 +130,8 @@ class Command extends SystemCommand
 
     protected function defineVariables()
     {
-        $this->update = $this->getUpdate();
-        $this->callback_query = $this->update->getCallbackQuery();
         $this->message = $this->getMessage();
-
+        dd($this);
         $this->chat = $this->message->getChat();
         $this->user = $this->message->getFrom();
         $this->chat_id = $this->chat->getId();

@@ -3,10 +3,11 @@
 namespace App\Helpers\Telegram;
 
 use App\TelegramUser;
+use App\Telegram\Actions\GeneralActions;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
-use Illuminate\Pagination\Paginator;
-use App\Telegram\Actions\GeneralActions;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 
@@ -45,42 +46,47 @@ class InlineCommand extends SystemCommand
         $this->callback_data = $this->callback_query->getData();
     }
 
+    //added
     protected function getSelectedProduct()
     {
         return $this->get('selected_product');
     }
 
+    //added
     protected function setSelectedProduct($payload)
     {
         return $this->set('selected_product', $payload);
     }
 
+    //added
     protected function getBasket()
     {
         return $this->get('basket');
     }
 
+    //added
     protected function setBasket($payload)
     {
         return $this->set('basket', $payload);
     }
 
+    //added
     protected function appendToBasket($payload)
     {
-        $items = $this->getBasket() ?? [];
-        $index = 0;
-        $exists = false;
-        foreach ($items as $item) {
-            if ($item['product_id'] == $payload['product_id']) {
-                $items[$index] = $payload;
-                $exists = true;
+        $collection = Collection::make($this->getBasket());
+
+        $collection->transform(function ($item) use ($payload) {
+            if ($item['product_id'] === $payload['product_id']) {
+                return $payload;
             }
-            $index++;
-        }
-        if (!$exists) {
-            $items[] = $payload;
-        }
-        return $this->set('basket', $items);
+            return $item;
+        });
+
+        $collection->whenEmpty(function ($collection) use ($payload) {
+            $collection->push($payload);
+        });
+
+        return $this->set('basket', $collection->all());
     }
 
     protected function splitActionMethods()
@@ -123,14 +129,13 @@ class InlineCommand extends SystemCommand
         $this->defineVariables();
 
         if (method_exists($this, $this->getActionName($this->getAction()))) {
-            return $this->runQueryAction(
-                $this->getActionName($this->getAction())
-            );
+            return $this->runQueryAction($this->getAction());
         }
     }
 
     protected function runQueryAction($action)
     {
+        $action = $this->getActionName($action);
         return $this->{$action}($this->requestData());
     }
 
@@ -148,7 +153,7 @@ class InlineCommand extends SystemCommand
         try {
             return Request::editMessageText($this->getData());
         } catch (\Throwable $e) {
-            dump($e->getMessage());
+            dump($e);
             $this->updateState('main_menu');
         }
     }
